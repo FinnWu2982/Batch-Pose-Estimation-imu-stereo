@@ -9,8 +9,7 @@ import matplotlib.pyplot as plt
 # SECTION 1: SE3 Math Library (工具库)
 # ==============================================================================
 
-# 请确保路径正确
-MAT_PATH = r'D:\下载\dataset3.mat'  # 建议使用相对路径，或者改回你的绝对路径
+MAT_PATH = "dataset3.mat" 
 
 
 def skew(v):
@@ -359,9 +358,6 @@ def run_sliding_window(solver, k_start, k_end, window_size):
     print(f"\nProcessing Sliding Window (Window Size={window_size})...")
     total_steps = k_end - k_start + 1
 
-    # 【关键修改 1】使用真正的弱先验
-    # 原来的 inv(diag(1e-4)) = diag(10000) 太强了，会锁死第一帧导致漂移无法拉回
-    # 这里用 1e-6 表示信息量极小，给予优化器调整窗口第一帧的自由度
     weak_prior = np.diag([1e-6] * 6)
 
     # 初始化第一帧的 Ground Truth
@@ -421,7 +417,6 @@ def main():
     k1, k2 = 1214, 1713
     times = solver.times[k1: k2 + 1]
 
-    # Q4 Plot
     print("Generating Q4 Plot...")
     valid_counts = []
     colors = []
@@ -434,7 +429,6 @@ def main():
     plt.title("Landmark Visibility")
     plt.show()
 
-    # Q5a
     print("\nRunning Q5a (Batch)...")
     theta0 = solver.gt_rot[:, k1]
     R0 = axis_angle_to_rot(theta0)
@@ -444,16 +438,14 @@ def main():
     batch_guess = solver.integrate_dead_reckoning(k1, k2, T_init)
     batch_prior = np.linalg.inv(np.diag([1e-4] * 6))
 
-    # 修复点：接收3个值
+    # 接收3个值
     T_batch, cov_batch, _ = solver.solve(k1, k2, batch_guess, batch_prior, max_iter=15)
     visualize_results(times, solver.gt_pos[:, k1:k2 + 1], solver.gt_rot[:, k1:k2 + 1], T_batch, cov_batch, "Q5a Batch")
 
-    # Q5b
     T_sw50, cov_sw50 = run_sliding_window(solver, k1, k2, 50)
     visualize_results(times, solver.gt_pos[:, k1:k2 + 1], solver.gt_rot[:, k1:k2 + 1], T_sw50, cov_sw50,
                       "Q5b Sliding Window 50")
 
-    # Q5c
     T_sw10, cov_sw10 = run_sliding_window(solver, k1, k2, 10)
     visualize_results(times, solver.gt_pos[:, k1:k2 + 1], solver.gt_rot[:, k1:k2 + 1], T_sw10, cov_sw10,
                       "Q5c Sliding Window 10")
