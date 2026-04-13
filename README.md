@@ -1,4 +1,5 @@
 # Batch Pose Estimation with IMU and Stereo Measurements
+
 This repository implements a nonlinear batch state estimation pipeline for 3D pose estimation using IMU and stereo measurements.
 
 ## Overview
@@ -21,5 +22,19 @@ The implementation includes:
 
 ## Requirements
 Install dependencies with:
+
 ```bash
 pip install -r requirements.txt
+```
+
+## How to Run
+This script requires the dataset file `dataset3.mat`, which is not included in this repository.
+After preparing the dataset and updating the dataset path inside the script, run:
+
+```bash
+python Batch_Pose_imu_stereo.py
+```
+
+## Notes
+This repository is adapted from a graduate state estimation course project at the University of Toronto.
+The dataset and original course handout are not included in this repository.
